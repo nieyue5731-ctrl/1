@@ -1,0 +1,71 @@
+
+        html.tu-low-power {
+            /* 后台/低功耗：尽量“省电优先” */
+            --hud-blur: 0px;
+            --glass-blur: 0px;
+            --tu-glass-blur: 0px;
+            --glow: 0 0 0 rgba(0, 0, 0, 0);
+            --glow-shadow: none;
+            --hud-shadow: 0 10px 24px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+        }
+
+        html.tu-quality-low {
+            /* 低帧：在保留少量质感的同时降低成本 */
+            --hud-blur: 6px;
+            --glass-blur: 6px;
+            --tu-glass-blur: 8px;
+            --hud-shadow: 0 10px 28px rgba(0, 0, 0, 0.46), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+        }
+
+        /* 关闭最吃性能的 backdrop-filter（仅 UI 面板层） */
+        html.tu-low-power .top-btn,
+        html.tu-low-power .toast,
+        html.tu-low-power .ux-panel,
+        html.tu-low-power #inventory-panel,
+        html.tu-low-power #crafting-panel,
+        html.tu-low-power #hotbar,
+        html.tu-low-power #minimap,
+        html.tu-low-power #info,
+        html.tu-low-power #mining-bar,
+        html.tu-low-power .stat-bar,
+        html.tu-low-power #inv-held,
+        html.tu-quality-low .top-btn,
+        html.tu-quality-low .toast,
+        html.tu-quality-low .ux-panel,
+        html.tu-quality-low #inventory-panel,
+        html.tu-quality-low #crafting-panel,
+        html.tu-quality-low #hotbar,
+        html.tu-quality-low #minimap,
+        html.tu-quality-low #info,
+        html.tu-quality-low #mining-bar,
+        html.tu-quality-low .stat-bar,
+        html.tu-quality-low #inv-held {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        /* 纯装饰动画：在低功耗/低档下关闭 */
+        html.tu-low-power #health-fill::after,
+        html.tu-low-power #mana-fill::after,
+        html.tu-low-power .slot.active::before,
+        html.tu-low-power #mining-bar .fill,
+        html.tu-low-power #mining-bar .fill::after,
+        html.tu-quality-low #health-fill::after,
+        html.tu-quality-low #mana-fill::after,
+        html.tu-quality-low .slot.active::before,
+        html.tu-quality-low #mining-bar .fill,
+        html.tu-quality-low #mining-bar .fill::after {
+            animation: none !important;
+        }
+
+        /* 环境 DOM 粒子：低功耗/低档直接关闭（Canvas 已有粒子系统） */
+        html.tu-low-power #ambient-particles,
+        html.tu-quality-low #ambient-particles {
+            display: none !important;
+        }
+
+        /* 图标 drop-shadow：可省一点合成开销 */
+        html.tu-low-power .stat-bar .icon,
+        html.tu-quality-low .stat-bar .icon {
+            filter: none !important;
+        }

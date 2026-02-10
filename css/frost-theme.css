@@ -1,0 +1,215 @@
+        :root {
+            --tu-glass-bg: rgba(15, 18, 40, 0.62);
+            --tu-glass-bg-strong: rgba(12, 14, 32, 0.82);
+            --tu-glass-border: rgba(255, 255, 255, 0.18);
+            --tu-glass-border-soft: rgba(255, 255, 255, 0.12);
+            --tu-glass-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+            --tu-glass-blur: 14px;
+            --tu-glass-radius: 18px;
+
+            --tu-text: rgba(255, 255, 255, 0.92);
+            --tu-muted: rgba(255, 255, 255, 0.68);
+
+            --tu-accent: rgba(108, 92, 231, 0.75);
+            --tu-accent2: rgba(253, 121, 168, 0.55);
+        }
+
+        body.tu-modal-open {
+            overflow: hidden;
+            overscroll-behavior: none;
+            touch-action: none;
+        }
+
+        /* 统一遮罩：更柔和的暗化 + 更明显的毛玻璃 */
+        .ux-overlay {
+            background: rgba(0, 0, 0, 0.48) !important;
+            backdrop-filter: blur(10px) saturate(1.25) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(1.25) !important;
+        }
+
+        /* 统一面板：更贴近挖掘进度条的磨砂半透明 */
+        .ux-panel,
+        #inventory-panel,
+        #crafting-panel {
+            background: var(--tu-glass-bg) !important;
+            border: 1px solid var(--tu-glass-border) !important;
+            border-radius: var(--tu-glass-radius) !important;
+            box-shadow: var(--tu-glass-shadow), 0 0 0 1px rgba(255, 255, 255, 0.06) inset !important;
+            backdrop-filter: blur(var(--tu-glass-blur)) saturate(1.25) !important;
+            -webkit-backdrop-filter: blur(var(--tu-glass-blur)) saturate(1.25) !important;
+            position: relative;
+        }
+
+        /* 内层“高光”描边（更像磨砂玻璃折射） */
+        .ux-panel::before,
+        #inventory-panel::before,
+        #crafting-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03));
+            opacity: 0.85;
+            mix-blend-mode: screen;
+        }
+
+        /* 标题栏更“HUD化” */
+        .ux-title {
+            padding-bottom: 10px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+        }
+
+        .ux-title h2 {
+            color: var(--tu-text) !important;
+            letter-spacing: 0.3px;
+        }
+
+        /* 统一按钮（包含暂停/设置/帮助面板按钮、背包/合成按钮） */
+        .ux-action,
+        .inv-btn,
+        .craft-btn,
+        #craft-action-btn {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: var(--tu-text) !important;
+            backdrop-filter: blur(12px) saturate(1.15) !important;
+            -webkit-backdrop-filter: blur(12px) saturate(1.15) !important;
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35) !important;
+            transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease !important;
+        }
+
+        .ux-action:hover,
+        .inv-btn:hover,
+        .craft-btn:hover,
+        #craft-action-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, 0.26) !important;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42) !important;
+        }
+
+        .ux-action:active,
+        .inv-btn:active,
+        .craft-btn:active,
+        #craft-action-btn:active {
+            transform: translateY(0px);
+        }
+
+        /* Primary 按钮：柔和渐变强调（更贴近挖掘条的高亮） */
+        .ux-action.primary,
+        .inv-btn.primary,
+        #craft-action-btn.primary {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.58), rgba(253, 121, 168, 0.22)) !important;
+            border-color: rgba(162, 155, 254, 0.56) !important;
+        }
+
+        /* Close/小按钮：更像HUD上的磨砂小片 */
+        .ux-close,
+        .inv-close-btn,
+        .close-btn {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            color: var(--tu-text) !important;
+            backdrop-filter: blur(12px) saturate(1.2) !important;
+            -webkit-backdrop-filter: blur(12px) saturate(1.2) !important;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.38) !important;
+        }
+
+        .ux-close:hover,
+        .inv-close-btn:hover,
+        .close-btn:hover {
+            border-color: rgba(255, 255, 255, 0.26) !important;
+        }
+
+        /* 表单控件：统一磨砂 */
+        .ux-panel select,
+        .ux-panel input[type="text"],
+        .ux-panel input[type="number"] {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            color: var(--tu-text) !important;
+            border-radius: 12px !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+        }
+
+        .ux-panel small {
+            color: var(--tu-muted) !important;
+        }
+
+        /* Range：让轨道/滑块更精致 */
+        .ux-panel input[type="range"] {
+            accent-color: rgba(162, 155, 254, 0.95);
+        }
+
+        .ux-panel input[type="range"]::-webkit-slider-runnable-track {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .ux-panel input[type="range"]::-webkit-slider-thumb {
+            width: 18px;
+            height: 18px;
+            margin-top: -6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(0, 0, 0, 0.18);
+        }
+
+        /* 背包格子：微调更接近“玻璃小块” */
+        .inv-slot {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.14) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+        }
+
+        .inv-slot:hover {
+            border-color: rgba(255, 255, 255, 0.22) !important;
+        }
+
+        /* 合成列表格子同理 */
+        .craft-grid .craft-item,
+        .craft-grid button {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+        }
+
+        /* Toast 更像 HUD */
+        .toast {
+            background: rgba(15, 18, 40, 0.66) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            backdrop-filter: blur(14px) saturate(1.2) !important;
+            -webkit-backdrop-filter: blur(14px) saturate(1.2) !important;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55) !important;
+        }
+
+        
+        html.no-backdrop .top-btn,
+        html.no-backdrop .toast,
+        html.no-backdrop .ux-panel,
+        html.no-backdrop #inventory-panel,
+        html.no-backdrop #crafting-panel,
+        html.no-backdrop #hotbar,
+        html.no-backdrop #minimap,
+        html.no-backdrop #info,
+        html.no-backdrop #mining-bar,
+        html.no-backdrop .stat-bar,
+        html.no-backdrop #inv-held {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: rgba(15, 18, 40, 0.92) !important;
+            border-color: rgba(255, 255, 255, 0.18) !important;
+        }
+
+        html.no-backdrop .ux-overlay,
+        html.no-backdrop #inventory-overlay,
+        html.no-backdrop #crafting-overlay {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }

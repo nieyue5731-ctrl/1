@@ -1,0 +1,59 @@
+        .ux-val {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            vertical-align: middle;
+        }
+
+        /* 选中物品提示（顶部热键栏下方） */
+        .item-hint {
+            position: absolute;
+            top: 72px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            padding: 6px 10px;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.38);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 12px;
+            letter-spacing: 0.2px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+            opacity: 0;
+            transition: opacity 0.18s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            max-width: min(380px, 86vw);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-hint.show {
+            opacity: 1;
+        }
+
+        html.is-mobile .item-hint {
+            top: 76px;
+            font-size: 11px;
+        }
+
+        /* 帮助面板：按设备显示 */
+        #help-overlay .help-mobile {
+            display: none;
+        }
+
+        html.is-mobile #help-overlay .help-mobile {
+            display: grid;
+        }
+
+        html.is-mobile #help-overlay .help-desktop {
+            display: none;
+        }
+    
