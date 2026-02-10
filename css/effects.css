@@ -1,0 +1,108 @@
+        /* ═══════════════════ 环境粒子 ═══════════════════ */
+        #ambient-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            overflow: hidden;
+        }
+
+        .firefly {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold);
+            animation: fireflyFloat 8s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes fireflyFloat {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: translateY(0) translateX(0);
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: translateY(-100px) translateX(50px);
+            }
+
+            90% {
+                opacity: 0.8;
+            }
+        }
+
+        
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 14px;
+            border-radius: 2px;
+            background: linear-gradient(to bottom, rgba(180, 220, 255, 0), rgba(180, 220, 255, 0.9));
+            opacity: 0.6;
+            transform: translate3d(0, -20vh, 0) rotate(12deg);
+            animation: rainFall 0.9s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rainFall {
+            from {
+                transform: translate3d(0, -20vh, 0) rotate(12deg);
+            }
+
+            to {
+                transform: translate3d(0, 120vh, 0) rotate(12deg);
+            }
+        }
+
+        .snowflake {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
+            opacity: 0.85;
+            transform: translate3d(0, -10vh, 0);
+            animation: snowFall 7s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes snowFall {
+            from {
+                transform: translate3d(0, -10vh, 0);
+            }
+
+            to {
+                transform: translate3d(var(--drift, 0px), 120vh, 0);
+            }
+        }
+
+        
+        :root {
+            --weather-hue: 0deg;
+            --weather-sat: 1;
+            --weather-bright: 1;
+            --weather-contrast: 1;
+        }
+
+        body.weather-on #game {
+            filter: hue-rotate(var(--weather-hue)) saturate(var(--weather-sat)) brightness(var(--weather-bright)) contrast(var(--weather-contrast));
+        }
+
+        body:not(.weather-on) #game {
+            filter: none;
+        }
+
+        

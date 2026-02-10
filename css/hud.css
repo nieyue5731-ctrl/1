@@ -1,0 +1,464 @@
+        #game {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ═══════════════════ 玻璃态UI层 ═══════════════════ */
+        #ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* ═══════════════════ 状态栏 - 现代玻璃态 ═══════════════════ */
+        #stats {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transform-origin: top left;
+        }
+
+        .stat-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(var(--hud-blur));
+            -webkit-backdrop-filter: blur(var(--hud-blur));
+            background: var(--hud-bg);
+            border: 1px solid var(--hud-border);
+            border-radius: var(--hud-radius);
+            padding: 6px 12px 6px 8px;
+            box-shadow: var(--hud-shadow);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .stat-bar:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-bar .icon {
+            font-size: 20px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .stat-bar .bar {
+            width: 130px;
+            height: 18px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-bar .fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-bar .fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                left: 100%;
+            }
+        }
+
+        #health-fill {
+            background: var(--health);
+        }
+
+        #mana-fill {
+            background: var(--mana);
+        }
+
+        .stat-bar .value {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ═══════════════════ 快捷栏 - 豪华版 ═══════════════════ */
+        #hotbar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            background: linear-gradient(135deg, rgba(30, 30, 60, 0.9), rgba(20, 20, 40, 0.95));
+            padding: 10px 14px;
+            border-radius: 20px;
+            border: 2px solid rgba(108, 92, 231, 0.3);
+            box-shadow: var(--shadow), var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            pointer-events: auto;
+        }
+
+        .slot {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, rgba(50, 50, 80, 0.8), rgba(30, 30, 50, 0.9));
+            border: 2px solid rgba(100, 100, 150, 0.4);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .slot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .slot:hover {
+            transform: translateY(-3px);
+            border-color: rgba(162, 155, 254, 0.6);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .slot.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 25px rgba(255, 234, 167, 0.6), 0 0 50px rgba(255, 234, 167, 0.3);
+            transform: translateY(-5px) scale(1.08);
+            background: linear-gradient(145deg, rgba(70, 60, 100, 0.9), rgba(50, 40, 70, 0.95));
+        }
+
+        .slot.active::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--gold), var(--accent), var(--gold));
+            border-radius: 14px;
+            z-index: -1;
+            animation: borderGlow 2s linear infinite;
+        }
+
+        @keyframes borderGlow {
+
+            0%,
+            100% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .slot canvas {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+        }
+
+        .slot .item-icon {
+            font-size: 26px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+        }
+
+        .slot .count {
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gold);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 234, 167, 0.5);
+        }
+
+        .slot .key {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .slot.empty {
+            opacity: 0.4;
+            background: linear-gradient(145deg, rgba(30, 30, 50, 0.6), rgba(20, 20, 30, 0.7));
+        }
+
+        .slot.empty:hover {
+            opacity: 0.6;
+        }
+
+        /* ═══════════════════ 小地图 - 全息风格 ═══════════════════ */
+        #minimap {
+            position: absolute;
+            contain: layout paint;
+            /* transform 动画更 GPU 友好（展开/收起不再触发布局） */
+            --mm-sx: 1;
+            --mm-sy: 1;
+            will-change: transform;
+            right: 15px;
+            bottom: 15px;
+            top: auto;
+            width: 160px;
+            height: 100px;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            background: linear-gradient(135deg, rgba(20, 20, 40, 0.85), rgba(10, 10, 30, 0.9));
+            border: 2px solid rgba(108, 92, 231, 0.4);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow), 0 0 30px rgba(108, 92, 231, 0.2);
+            cursor: pointer;
+            user-select: none;
+            pointer-events: auto;
+            transition: transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1), border-radius 220ms cubic-bezier(0.2, 0.9, 0.2, 1);
+            transform-origin: bottom right;
+            transform: translateZ(0) scale(var(--mm-sx), var(--mm-sy));
+        }
+
+        #minimap::before {
+            content: '🗺️ MAP (点击展开)';
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.55);
+            letter-spacing: 2px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        #minimap canvas {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            opacity: 0.9;
+        }
+
+        #minimap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            /* 原文件这里的渐变写法有截断字符，保留原思路并修正为可用值 */
+            background: linear-gradient(180deg, rgba(108, 92, 231, 0.15) 0%, transparent 30%, transparent 70%, rgba(108, 92, 231, 0.10) 100%);
+            pointer-events: none;
+            border-radius: 14px;
+        }
+
+        
+        #minimap.minimap-collapsed {
+            border-radius: 14px;
+        }
+
+        #minimap.minimap-collapsed::before {
+            content: '🗺️';
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            letter-spacing: 0;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        #minimap.minimap-collapsed canvas {
+            opacity: 0;
+        }
+
+        #minimap.minimap-expanded {}
+
+        #minimap.minimap-expanded::before {
+            content: '🗺️ MAP (点击收起)';
+        }
+
+        /* ═══════════════════ 挖掘进度条 (新版 HUD) ═══════════════════ */
+        #mining-bar {
+            --mb-accent: #ffeaa7;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transform: translate(-50%, -100%) scale(0.98);
+            min-width: 180px;
+            max-width: min(240px, 78vw);
+            padding: 10px 12px 10px 10px;
+            border-radius: var(--hud-radius);
+            background: var(--hud-bg);
+            border: 1px solid var(--hud-border);
+            box-shadow: var(--hud-shadow);
+            backdrop-filter: blur(var(--hud-blur));
+            -webkit-backdrop-filter: blur(var(--hud-blur));
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+            opacity: 0;
+            will-change: transform, opacity, left, top;
+            transition: opacity 140ms ease, transform 140ms ease;
+        }
+
+        #mining-bar.show {
+            opacity: 1;
+            transform: translate(-50%, -100%) scale(1);
+        }
+
+        #mining-bar::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+        }
+
+        #mining-bar .mb-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        #mining-bar .mb-icon {
+            width: 18px;
+            height: 18px;
+            flex: 0 0 18px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+            image-rendering: pixelated;
+        }
+
+        #mining-bar .mb-name {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #mining-bar .mb-percent {
+            flex: 0 0 auto;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        #mining-bar .mb-track {
+            position: relative;
+            height: 9px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45);
+        }
+
+        #mining-bar .fill {
+            position: relative;
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg,
+                    var(--mb-accent) 0%,
+                    rgba(255, 255, 255, 0.35) 28%,
+                    #fd79a8 58%,
+                    #6c5ce7 100%);
+            background-size: 200% 100%;
+            animation: miningGradient 0.9s linear infinite;
+            transition: width 50ms linear;
+            box-shadow: 0 0 14px rgba(253, 121, 168, 0.25);
+        }
+
+        #mining-bar .fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.28) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: translateX(-120%);
+            animation: miningShine 1.15s ease-in-out infinite;
+            opacity: 0.65;
+        }
+
+        @keyframes miningGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        @keyframes miningShine {
+            0% {
+                transform: translateX(-120%);
+            }
+
+            65% {
+                transform: translateX(120%);
+            }
+
+            100% {
+                transform: translateX(120%);
+            }
+        }
+
+        html.is-mobile #mining-bar {
+            min-width: 160px;
+            padding: 9px 11px 9px 9px;
+            border-radius: 13px;
+        }

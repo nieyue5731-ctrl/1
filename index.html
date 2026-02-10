@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="description" content="Terraria Ultra - Aesthetic Edition - A beautiful 2D sandbox game">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="yes" name="mobile-web-app-capable" />
+    <meta content="#1a1a2e" name="theme-color" />
+    <title>Terraria Ultra - Aesthetic Edition</title>
+
+    <!-- ========================= CSS: Variables & Reset ========================= -->
+    <link rel="stylesheet" href="css/variables.css" />
+    <!-- ========================= CSS: Inline Components (toast, overlays, top-buttons) ========================= -->
+    <link rel="stylesheet" href="css/inline-components.css" />
+    <!-- ========================= CSS: HUD (stats, hotbar, slots, mining bar) ========================= -->
+    <link rel="stylesheet" href="css/hud.css" />
+    <!-- ========================= CSS: HUD Extras (info, fullscreen, fps, time) ========================= -->
+    <link rel="stylesheet" href="css/hud-extras.css" />
+    <!-- ========================= CSS: Loading Screen ========================= -->
+    <link rel="stylesheet" href="css/loading.css" />
+    <!-- ========================= CSS: Mobile Controls ========================= -->
+    <link rel="stylesheet" href="css/mobile.css" />
+    <!-- ========================= CSS: Responsive Breakpoints ========================= -->
+    <link rel="stylesheet" href="css/responsive.css" />
+    <!-- ========================= CSS: Mobile Overrides (html.is-mobile) ========================= -->
+    <link rel="stylesheet" href="css/mobile-overrides.css" />
+    <!-- ========================= CSS: Rotate Hint ========================= -->
+    <link rel="stylesheet" href="css/rotate-hint.css" />
+    <!-- ========================= CSS: Crafting UI ========================= -->
+    <link rel="stylesheet" href="css/crafting.css" />
+    <!-- ========================= CSS: Effects (particles, weather, fireflies) ========================= -->
+    <link rel="stylesheet" href="css/effects.css" />
+    <!-- ========================= CSS: UI Misc (hints, help) ========================= -->
+    <link rel="stylesheet" href="css/ui-misc.css" />
+    <!-- ========================= CSS: Frost Theme (glass morphism) ========================= -->
+    <link rel="stylesheet" href="css/frost-theme.css" />
+    <!-- ========================= CSS: Performance Mode ========================= -->
+    <link rel="stylesheet" href="css/performance.css" />
+    <!-- ========================= CSS: Performance Optimization ========================= -->
+    <link rel="stylesheet" href="css/perf-optimization.css" />
+
+    <!-- ========================= JS: Defensive Infrastructure (IIFE) ========================= -->
+    <script src="js/core/defensive.js"></script>
+    <!-- ========================= JS: Safe Utilities + RingBuffer ========================= -->
+    <script src="js/core/safe-utils.js"></script>
+    <!-- ========================= JS: ParticlePool ========================= -->
+    <script src="js/performance/particle-pool.js"></script>
+    <!-- ========================= JS: PERF_MONITOR delegate ========================= -->
+    <script src="js/performance/perf-monitor-delegate.js"></script>
+</head>
+
+<body>
+    <canvas id="game"></canvas>
+    <!-- Ambient particles -->
+    <div id="ambient-particles"></div>
+    <!-- Loading screen -->
+    <div id="loading">
+        <div class="loading-particles"></div>
+        <div class="loading-content">
+            <h1>TERRARIA ULTRA</h1>
+            <p class="subtitle">Aesthetic Edition</p>
+            <div class="progress">
+                <div class="progress-fill" id="load-progress"></div>
+            </div>
+            <div class="status" id="load-status">Initializing...</div>
+        </div>
+    </div>
+    <!-- Rotate hint -->
+    <div id="rotate-hint">
+        <div class="icon">📱</div>
+        <p>请横屏游玩以获得最佳体验</p>
+    </div>
+    <!-- Crafting overlay -->
+    <div id="crafting-overlay">
+        <div id="crafting-panel">
+            <div class="close-btn" id="craft-close">✕</div>
+            <div class="craft-list-container">
+                <div class="craft-header">
+                    <span>🔨 制造</span>
+                </div>
+                <div class="craft-grid" id="craft-grid"></div>
+            </div>
+            <div class="craft-details">
+                <div class="preview-box" id="craft-preview"></div>
+                <div class="item-title" id="craft-title">选择物品</div>
+                <div class="item-desc" id="craft-desc">点击左侧列表查看配方</div>
+                <div class="ingredients-list" id="craft-ingredients"></div>
+                <button class="craft-btn" disabled="" id="craft-action-btn">制造</button>
+            </div>
+        </div>
+    </div>
+    <!-- Inventory overlay -->
+    <div aria-hidden="true" id="inventory-overlay">
+        <div aria-label="背包" id="inventory-panel" role="dialog">
+            <div class="inv-close-btn" id="inv-close" title="关闭 (Esc)">✕</div>
+            <div class="inv-left">
+                <div class="inv-topbar">
+                    <div class="inv-title">🎒 背包</div>
+                    <div class="inv-capacity">
+                        <span class="inv-capacity-text" id="inv-capacity-text">0/36</span>
+                        <div class="inv-capacity-bar">
+                            <div class="fill" id="inv-capacity-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="inv-section">
+                    <div class="inv-section-label">快捷栏 <span style="opacity:.6">(1-9)</span></div>
+                    <div class="inv-grid" id="inv-hotbar-grid"></div>
+                </div>
+                <div class="inv-section">
+                    <div class="inv-section-label">背包</div>
+                    <div class="inv-grid" id="inv-backpack-grid"></div>
+                </div>
+            </div>
+            <div class="inv-right">
+                <div class="inv-preview-box" id="inv-preview"></div>
+                <div class="inv-item-name" id="inv-item-name">未选择</div>
+                <div class="inv-item-meta" id="inv-item-meta"></div>
+                <div class="inv-item-desc" id="inv-item-desc">点击格子查看，或拖拽/点击交换。</div>
+                <div class="inv-action-row">
+                    <button class="inv-btn primary" id="inv-sort">🧹 整理</button>
+                    <button class="inv-btn" id="inv-to-hotbar">↔ 放入快捷栏</button>
+                    <button class="inv-btn" id="inv-put-back">↩ 放回</button>
+                    <button class="inv-btn danger" id="inv-drop">🗑 丢弃</button>
+                </div>
+                <div class="inv-hints">
+                    <div><kbd>左键</kbd> 拿起/放下　<kbd>右键</kbd> 拆分/放 1 个</div>
+                    <div><kbd>Shift</kbd>+<kbd>点击</kbd> 快速移动　<kbd>B</kbd>/<kbd>I</kbd> 打开背包　<kbd>Esc</kbd> 关闭</div>
+                </div>
+            </div>
+        </div>
+        <div aria-hidden="true" id="inv-held"></div>
+    </div>
+    <!-- UX+: Pause / Settings / Save overlays -->
+    <div aria-hidden="true" class="ux-overlay" id="pause-overlay">
+        <div class="ux-panel">
+            <div class="ux-title">
+                <h2>⏸ 已暂停</h2>
+                <button aria-label="关闭" class="ux-close" id="pause-close">✕</button>
+            </div>
+            <div class="ux-grid">
+                <div class="ux-row">
+                    <label>
+                        <b>提示</b>
+                        <small>暂停时游戏不会更新；你仍可查看界面并调整设置。</small>
+                    </label>
+                    <span> </span>
+                </div>
+            </div>
+            <div class="ux-actions">
+                <button class="ux-action" id="pause-newworld">🧹 新世界</button>
+                <button class="ux-action" id="pause-save">💾 保存</button>
+                <button class="ux-action" id="pause-fullscreen">🖥 全屏</button>
+                <button class="ux-action primary" id="pause-resume">▶ 继续</button>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" class="ux-overlay" id="settings-overlay">
+        <div class="ux-panel">
+            <div class="ux-title">
+                <h2>⚙️ 设置</h2>
+                <button aria-label="关闭" class="ux-close" id="settings-close">✕</button>
+            </div>
+            <div class="ux-grid">
+                <div class="ux-row"><label>画质 / 分辨率倍率<small>降低可显著提升低端设备帧率</small></label>
+                    <select id="opt-dpr"><option value="1">省电 (1x)</option><option value="1.5">均衡 (1.5x)</option><option value="2">高清 (2x)</option></select></div>
+                <div class="ux-row"><label>粒子效果<small>关闭可减少卡顿</small></label>
+                    <select id="opt-particles"><option value="1">开启</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>环境特效<small>关闭可减少 DOM 动画压力</small></label>
+                    <select id="opt-ambient"><option value="1">开启</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>背景墙山脉</label>
+                    <select id="opt-bgmountains"><option value="1">开启</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>后期画面增强<small>低端设备可选"轻量/关闭"</small></label>
+                    <select id="opt-postfx"><option value="2">极致</option><option value="1">轻量</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>小地图</label>
+                    <select id="opt-minimap"><option value="1">开启</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>触控辅助瞄准</label>
+                    <select id="opt-aimassist"><option value="1">开启</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>震动反馈</label>
+                    <select id="opt-vibration"><option value="1">开启</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>自动性能调节</label>
+                    <select id="opt-autoquality"><option value="1">开启</option><option value="0">关闭</option></select></div>
+                <div class="ux-row"><label>显示 FPS</label>
+                    <select id="opt-showfps"><option value="0">关闭</option><option value="1">开启</option></select></div>
+                <div class="ux-row"><label>镜头平滑 <span class="ux-val" id="val-camsmooth"></span></label>
+                    <input id="opt-camsmooth" max="18" min="3" step="1" type="range" /></div>
+                <div class="ux-row"><label>镜头前瞻 <span class="ux-val" id="val-lookahead"></span></label>
+                    <input id="opt-lookahead" max="15" min="0" step="1" type="range" /></div>
+            </div>
+            <div class="ux-actions">
+                <button class="ux-action primary" id="settings-ok">✓ 确定</button>
+            </div>
+        </div>
+    </div>
+    <!-- Save prompt -->
+    <div aria-hidden="true" class="ux-overlay" id="save-prompt-overlay">
+        <div class="ux-panel" style="max-width:400px">
+            <div class="ux-title"><h2>💾 发现存档</h2>
+                <button aria-label="关闭" class="ux-close" id="save-prompt-close">✕</button></div>
+            <div class="ux-grid"><div class="ux-row"><label><b>是否继续上次的冒险？</b><small>选择"新世界"将覆盖旧存档。</small></label></div></div>
+            <div class="ux-actions">
+                <button class="ux-action" id="save-prompt-new">🧹 新世界</button>
+                <button class="ux-action primary" id="save-prompt-continue">▶ 继续</button>
+            </div>
+        </div>
+    </div>
+    <!-- Help overlay -->
+    <div aria-hidden="true" class="ux-overlay" id="help-overlay">
+        <div class="ux-panel">
+            <div class="ux-title"><h2>❓ 操作指南</h2>
+                <button aria-label="关闭" class="ux-close" id="help-close">✕</button></div>
+            <div class="help-desktop ux-grid">
+                <div class="ux-row"><label><b>移动</b></label><span>A / D / ← / →</span></div>
+                <div class="ux-row"><label><b>跳跃</b></label><span>W / ↑ / Space</span></div>
+                <div class="ux-row"><label><b>冲刺</b></label><span>长按方向 / Shift</span></div>
+                <div class="ux-row"><label><b>挖掘</b></label><span>鼠标左键</span></div>
+                <div class="ux-row"><label><b>放置</b></label><span>鼠标右键</span></div>
+                <div class="ux-row"><label><b>切换物品</b></label><span>1-9 / 滚轮</span></div>
+                <div class="ux-row"><label><b>合成</b></label><span>E</span></div>
+                <div class="ux-row"><label><b>背包</b></label><span>B / I</span></div>
+                <div class="ux-row"><label><b>暂停</b></label><span>P / Esc</span></div>
+                <div class="ux-row"><label><b>全屏</b></label><span>F</span></div>
+                <div class="ux-row"><label><b>小地图</b></label><span>M</span></div>
+                <div class="ux-row"><label><b>保存</b></label><span>Ctrl+S</span></div>
+            </div>
+            <div class="help-mobile ux-grid">
+                <div class="ux-row"><label><b>移动</b></label><span>左侧摇杆</span></div>
+                <div class="ux-row"><label><b>跳跃</b></label><span>跳跃按钮</span></div>
+                <div class="ux-row"><label><b>挖掘/放置</b></label><span>右侧按钮</span></div>
+                <div class="ux-row"><label><b>切换物品</b></label><span>点击快捷栏</span></div>
+            </div>
+        </div>
+    </div>
+    <!-- HUD -->
+    <div id="ui">
+        <div id="stats">
+            <div class="stat-bar"><span class="icon">❤️</span><div class="bar"><div class="fill" id="health-fill" style="width:100%;background:var(--health)"></div><span class="value" id="health-text">100/100</span></div></div>
+            <div class="stat-bar"><span class="icon">💎</span><div class="bar"><div class="fill" id="mana-fill" style="width:100%;background:var(--mana)"></div><span class="value" id="mana-text">50/50</span></div></div>
+        </div>
+        <div id="hotbar"></div>
+        <div class="item-hint" id="item-hint"></div>
+        <div id="minimap"><canvas id="minimap-canvas" width="160" height="100"></canvas></div>
+        <div id="fps" style="display:none">60 FPS</div>
+        <div id="time-display"><span id="time-icon">☀️</span> <span id="time-text">12:00</span></div>
+        <div id="info">
+            <span class="highlight">WASD</span> 移动　<span class="highlight">Space</span> 跳跃<br>
+            <span class="highlight">左键</span> 挖掘　<span class="highlight">右键</span> 放置<br>
+            <span class="highlight">1-9</span> 切换物品　<span class="highlight">E</span> 合成<br>
+            <span class="highlight">B</span> 背包　<span class="highlight">P</span> 暂停
+        </div>
+        <div id="fullscreen-btn" role="button" aria-label="全屏">🖥</div>
+    </div>
+    <!-- Top buttons -->
+    <div id="top-buttons">
+        <button class="top-btn" id="btn-help" aria-label="帮助">❓</button>
+        <button class="top-btn" id="btn-settings" aria-label="设置">⚙️</button>
+        <button class="top-btn" id="btn-pause" aria-label="暂停">⏸</button>
+        <button class="top-btn" id="btn-inventory" aria-label="背包" style="display:none">🎒</button>
+    </div>
+    <!-- Mobile controls -->
+    <div id="mobile-controls">
+        <div class="joystick-container">
+            <div class="joystick-base"></div>
+            <div class="joystick-thumb" id="joystick-thumb"></div>
+        </div>
+        <div class="jump-container">
+            <button class="action-btn jump" id="btn-jump">⬆</button>
+        </div>
+        <div class="action-buttons">
+            <div class="action-row">
+                <button class="action-btn mine" id="btn-mine">⛏</button>
+                <button class="action-btn place" id="btn-place">🧱</button>
+            </div>
+            <div class="action-row">
+                <button class="action-btn" id="btn-craft-toggle" style="display:none">🔨</button>
+                <button class="action-btn" id="btn-bag-toggle" style="display:none">🎒</button>
+            </div>
+        </div>
+        <div id="crosshair"></div>
+    </div>
+    <!-- Mining bar -->
+    <div id="mining-bar">
+        <div class="mb-top">
+            <canvas class="mb-icon" id="mb-icon" width="18" height="18"></canvas>
+            <span class="mb-name" id="mb-name"></span>
+            <span class="mb-percent" id="mb-percent">0%</span>
+        </div>
+        <div class="mb-track"><div class="fill" id="mb-fill"></div></div>
+    </div>
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <!-- ========================= JS: Core Utils, Pools, PerfMonitor, TextureCache ========================= -->
+    <script src="js/core/utils-and-pools.js"></script>
+    <!-- ========================= JS: Naming Aliases ========================= -->
+    <script src="js/core/naming-aliases.js"></script>
+    <!-- ========================= JS: Loading Particles ========================= -->
+    <script src="js/boot/loading-particles.js"></script>
+    <!-- ========================= JS: Loading Init ========================= -->
+    <script src="js/boot/loading-init.js"></script>
+    <!-- ========================= JS: GameSettings ========================= -->
+    <script src="js/systems/settings.js"></script>
+    <!-- ========================= JS: Toast ========================= -->
+    <script src="js/ui/toast.js"></script>
+    <!-- ========================= JS: FullscreenManager ========================= -->
+    <script src="js/systems/fullscreen.js"></script>
+    <!-- ========================= JS: AudioManager ========================= -->
+    <script src="js/systems/audio.js"></script>
+    <!-- ========================= JS: UX/UI Wiring ========================= -->
+    <script src="js/ui/ux-wiring.js"></script>
+    <!-- ========================= JS: Constants (CONFIG, BLOCK, BLOCK_DATA) ========================= -->
+    <script src="js/core/constants.js"></script>
+    <!-- ========================= JS: WorldGenerator + NoiseGenerator ========================= -->
+    <script src="js/engine/world-generator.js"></script>
+    <!-- ========================= JS: ParticleSystem ========================= -->
+    <script src="js/entities/particle-system.js"></script>
+    <!-- ========================= JS: DroppedItem + Manager ========================= -->
+    <script src="js/entities/dropped-items.js"></script>
+    <!-- ========================= JS: AmbientParticles ========================= -->
+    <script src="js/entities/ambient-particles.js"></script>
+    <!-- ========================= JS: Player ========================= -->
+    <script src="js/entities/player.js"></script>
+    <!-- ========================= JS: TouchController ========================= -->
+    <script src="js/input/touch-controller.js"></script>
+    <!-- ========================= JS: Parallax Mountains ========================= -->
+    <script src="js/engine/parallax.js"></script>
+    <!-- ========================= JS: Renderer + RenderBatcher ========================= -->
+    <script src="js/engine/renderer.js"></script>
+    <!-- ========================= JS: Renderer Extras (texture gen, bucket state) ========================= -->
+    <script src="js/engine/renderer-extras.js"></script>
+    <!-- ========================= JS: CraftingSystem ========================= -->
+    <script src="js/ui/crafting-ui.js"></script>
+    <!-- ========================= JS: UIFlushScheduler ========================= -->
+    <script src="js/systems/ui-flush.js"></script>
+    <!-- ========================= JS: QualityManager ========================= -->
+    <script src="js/systems/quality.js"></script>
+    <!-- ========================= JS: Minimap ========================= -->
+    <script src="js/ui/minimap.js"></script>
+    <!-- ========================= JS: Minimap Toggle ========================= -->
+    <script src="js/ui/minimap-toggle.js"></script>
+    <!-- ========================= JS: InventoryUI ========================= -->
+    <script src="js/ui/inventory-ui.js"></script>
+    <!-- ========================= JS: InventoryUI Extras ========================= -->
+    <script src="js/ui/inventory-ui-extras.js"></script>
+    <!-- ========================= JS: InputManager ========================= -->
+    <script src="js/input/input-manager.js"></script>
+    <!-- ========================= JS: InventorySystem ========================= -->
+    <script src="js/systems/inventory.js"></script>
+    <!-- ========================= JS: Game Class ========================= -->
+    <script src="js/engine/game.js"></script>
+    <!-- ========================= JS: Game Methods (loop, update, interaction) ========================= -->
+    <script src="js/engine/game-methods.js"></script>
+    <!-- ========================= JS: Patches - Visual/Render ========================= -->
+    <script src="js/engine/patches-render.js"></script>
+    <!-- ========================= JS: Patches - Weather & Save ========================= -->
+    <script src="js/systems/patches-weather-save.js"></script>
+    <!-- ========================= JS: Weather System ========================= -->
+    <script src="js/systems/weather.js"></script>
+    <!-- ========================= JS: Patches - Chunk Batching ========================= -->
+    <script src="js/engine/patches-chunks.js"></script>
+    <!-- ========================= JS: TileLogicEngine ========================= -->
+    <script src="js/systems/tile-logic-engine.js"></script>
+    <!-- ========================= JS: Weather Canvas FX ========================= -->
+    <script src="js/systems/weather-canvas-fx.js"></script>
+    <!-- ========================= JS: Worker Client ========================= -->
+    <script src="js/workers/worker-client.js"></script>
+    <!-- ========================= JS: Error Guards ========================= -->
+    <script src="js/core/error-guards.js"></script>
+    <!-- ========================= JS: Misc Patches (structures, biomes, sprint, GC opt) ========================= -->
+    <script src="js/engine/patches-misc.js"></script>
+    <!-- ========================= JS: Bootstrap ========================= -->
+    <script src="js/boot/boot.js"></script>
+    <!-- ========================= JS: Runtime Optimization Patch ========================= -->
+    <script src="js/engine/patches-runtime-opt.js"></script>
+    <!-- ========================= JS: Final SpreadLight Patch ========================= -->
+    <script src="js/engine/patches-spreadlight.js"></script>
+    <!-- ========================= JS: Health Check ========================= -->
+    <script src="js/boot/health-check.js"></script>
+</body>
+</html>

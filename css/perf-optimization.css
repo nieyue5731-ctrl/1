@@ -1,0 +1,38 @@
+        
+        /* Containment: reduce layout/paint scope for interactive elements */
+        .action-btn,
+        .top-btn {
+            contain: layout style;
+        }
+        .inv-slot,
+        .craft-item,
+        .toast {
+            contain: layout style paint;
+        }
+        #stats,
+        #hotbar,
+        .action-buttons {
+            contain: layout;
+        }
+
+        /* GPU compositing hints (only for elements that actually animate frequently) */
+        #joystick-thumb,
+        #crosshair {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        /* Respect user preference for reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Text rendering optimization */
+        body {
+            text-rendering: optimizeSpeed;
+        }
